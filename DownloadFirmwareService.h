@@ -1,5 +1,4 @@
-#ifndef FeaturesService_h
-#define FeaturesService_h
+#pragma once
 
 /**
  *   ESP32 SvelteKit
@@ -15,24 +14,32 @@
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/
 
-#include <Features.h>
+#include <Arduino.h>
 
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ArduinoJson.h>
 #include <AsyncJson.h>
+
 #include <ESPAsyncWebServer.h>
+#include <SecurityManager.h>
+#include <NotificationEvents.h>
 
-#define MAX_FEATURES_SIZE 256
-#define FEATURES_SERVICE_PATH "/rest/features"
+#include <HTTPClient.h>
+#include <HTTPUpdate.h>
+// #include <SSLCertBundle.h>
 
-class FeaturesService
+#define GITHUB_FIRMWARE_PATH "/rest/downloadUpdate"
+#define MAX_GITHUB_SIZE 192
+#define OTA_TASK_STACK_SIZE 9216
+
+class DownloadFirmwareService
 {
 public:
-    FeaturesService(AsyncWebServer *server);
+    DownloadFirmwareService(AsyncWebServer *server, SecurityManager *securityManager, NotificationEvents *notificationEvents);
 
 private:
-    void features(AsyncWebServerRequest *request);
+    SecurityManager *_securityManager;
+    AsyncCallbackJsonWebHandler _downloadHandler;
+    void downloadUpdate(AsyncWebServerRequest *request, JsonVariant &json);
 };
-
-#endif
